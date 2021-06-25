@@ -20,9 +20,9 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({
     <View style={styles.container}>
       <Text>{name}</Text>
       <Text style={styles.description}>{description}</Text>
-      <View>
-        <Text style={styles.totalStock}>{totalStock} available</Text>
-        <Text style={styles.totalStock}>@ {price} per unit</Text>
+      <Text>@ {price} per unit</Text>
+      <View style={styles.section}>
+        <Text>{totalStock} units available</Text>
         <Text style={styles.viewLink}>View</Text>
       </View>
     </View>
@@ -69,12 +69,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'black',
     textAlign: 'left',
-    width: '80%',
+    width: '50%',
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'relative',
+    bottom: -15,
   },
   viewLink: {
     fontSize: 12,
     color: '#E35540',
-    textAlign: 'left',
-    width: '20%',
+    textAlign: 'right',
+    width: '50%',
   },
 });
