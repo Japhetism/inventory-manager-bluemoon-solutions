@@ -43,10 +43,10 @@ const InventoryForm: React.FC<FormValuesType> = ({
   totalStock,
   price,
   description,
-  onSubmit,
-  onDelete,
   type,
   id,
+  onSubmit,
+  onDelete,
 }) => {
   const initialValues: FormValuesType = {
     name,

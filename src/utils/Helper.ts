@@ -4,15 +4,15 @@ export const displayAlert = (title: string, subTitle: string, onPress: any) => {
   Alert.alert(
     title,
     subTitle,
-    [
-      onPress && {
+    onPress && [
+      {
         text: 'Yes',
         onPress: () => {
           onPress();
         },
       },
       {
-        text: onPress ? 'No' : 'Ok',
+        text: 'No',
         onPress: () => {
           cancelable: true;
         },
@@ -20,4 +20,10 @@ export const displayAlert = (title: string, subTitle: string, onPress: any) => {
     ],
     {cancelable: true},
   );
+};
+
+export const recordExist = (records: any, name: string) => {
+  return records.reverse().filter((record: any) => {
+    return record.name === name;
+  });
 };

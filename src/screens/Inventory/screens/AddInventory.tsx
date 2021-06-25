@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import InventoryForm from '../../components/InventoryForm';
 import Header from '../../components/Header';
-import {displayAlert} from '../../../utils/Helper';
+import {displayAlert, recordExist} from '../../../utils/Helper';
 
 export interface FormValuesType {
   name: string;
@@ -44,13 +44,18 @@ const AddInventory = () => {
         await AsyncStorage.setItem('@inventories', JSON.stringify(newData));
       } else {
         const parsedPreviousData = JSON.parse(previousData);
-        parsedPreviousData.push(data);
-        await AsyncStorage.setItem(
-          '@inventories',
-          JSON.stringify(parsedPreviousData),
-        );
+        console.log('record exist ', recordExist(parsedPreviousData, name));
+        if (recordExist(parsedPreviousData, name).length === 0) {
+          parsedPreviousData.push(data);
+          await AsyncStorage.setItem(
+            '@inventories',
+            JSON.stringify(parsedPreviousData),
+          );
+          navigation.navigate('InventoryListing');
+        } else {
+          displayAlert('Error', `Inventory ${name} already exist`, null);
+        }
       }
-      navigation.navigate('InventoryListing');
     } catch (e) {
       displayAlert('Error', 'An error occurred.', null);
     }
