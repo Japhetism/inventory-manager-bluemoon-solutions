@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import AddInventory from '../src/screens/Inventory/screens/AddInventory';
+import {AddInventory} from '../src/screens/Inventory/screens/';
 
 test('renders correctly', () => {
   const tree = renderer.create(<AddInventory />).toJSON();

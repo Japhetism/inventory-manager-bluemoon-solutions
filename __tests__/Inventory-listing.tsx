@@ -1,8 +1,8 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import {EditInventory} from '../src/screens/Inventory/screens/';
+import {InventoryListing} from '../src/screens/Inventory/screens/';
 
 test('renders correctly', () => {
-  const tree = renderer.create(<EditInventory />).toJSON();
+  const tree = renderer.create(<InventoryListing />).toJSON();
   expect(tree).toMatchSnapshot();
 });
