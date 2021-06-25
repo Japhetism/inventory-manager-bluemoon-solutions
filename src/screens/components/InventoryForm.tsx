@@ -121,11 +121,19 @@ const InventoryForm: React.FC<InventoryDetailsProps> = ({
           />
          <Text style={styles.error}>{touched.description && errors.description}</Text>
         </View>
-        <View style={styles.buttonContainer}>
+        {type === 'create' && <View style={styles.buttonCreateContainer}>
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.text}>Add Inventory</Text>
           </TouchableOpacity>
-        </View>
+        </View>}
+        {type === 'edit' && <View style={styles.buttonEditContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.text}>Save Changes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onDelete}>
+            <Text style={styles.text}>Delete</Text>
+          </TouchableOpacity>
+        </View>} 
     </SafeAreaView>
         )}
         </Formik>
@@ -170,8 +178,14 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  buttonContainer: {
+  buttonCreateContainer: {
     alignItems: 'center',
+  },
+  buttonEditContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   error: {
     color: 'red',
