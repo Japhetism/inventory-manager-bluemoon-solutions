@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {windowWidth} from '../constants';
 import Colors from '../../utils/Colors';
 
@@ -8,7 +9,6 @@ interface InventoryDetailsProps {
   totalStock: number;
   price: number;
   description: string;
-  navigation: string;
   id: number;
 }
 
@@ -17,19 +17,18 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({
   totalStock,
   price,
   description,
-  navigation,
   id,
 }) => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('EditInventory', {inventory: {name, totalStock, price, description, id}})}>
       <Text>{name}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text>@ {price} per unit</Text>
       <View style={styles.section}>
         <Text>{totalStock} units available</Text>
-        <Text style={styles.viewLink} onPress={() => navigation.navigate('EditInventory', {inventory: {name, totalStock, price, description, id}})}>View</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -39,7 +38,7 @@ const styles = StyleSheet.create({
   container: {
     width: windowWidth < 414 ? 345 : 380,
     minHeight: 110,
-    backgroundColor: '#fff', // margin: 5,
+    backgroundColor: '#fff',
     display: 'flex',
     flexDirection: 'column',
     alignSelf: 'center',

@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button, Alert} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
 import {arrowLeft} from '../../constants';
@@ -30,7 +31,8 @@ const validationSchema = yup.object({
     .required('Description is required'),
 });
 
-const AddInventory = ({navigation}) => {
+const AddInventory = () => {
+  const navigation = useNavigation();
   const [isDisabled, setIsDisabled] = useState(false);
   const [error, setError] = useState('');
   const onPress = () => {
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 15,
     marginTop: 20,
-  }
+  },
 });
 
 const ArrowLeft = styled.Image`

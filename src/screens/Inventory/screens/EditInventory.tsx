@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button} from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
 import {arrowLeft} from '../../constants';
@@ -13,7 +14,7 @@ export interface FormValuesType {
   description: string;
   price: number;
   totalStock: number;
-  id: number,
+  id: number;
 }
 
 const validationSchema = yup.object({
@@ -31,7 +32,9 @@ const validationSchema = yup.object({
     .required('Description is required'),
 });
 
-const EditInventory = ({ route, navigation }) => {
+const EditInventory = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
   console.log("route is ", route)
   const {inventory} = route.params;
   console.log("passed inventory ", inventory)
@@ -54,17 +57,6 @@ const EditInventory = ({ route, navigation }) => {
     description: inventory.description,
   };
 
-  // React.useEffect(() => {
-  //   const {inventory} = route.params;
-  //   console.log("passed inventory ", inventory)
-  //   // initialValues: FormValuesType = {
-  //   //   name: inventory.name,
-  //   //   price: inventory.price,
-  //   //   totalCost: inventory.totalCost,
-  //   //   description: inventory.description,
-  //   // };
-  // }, [])
-
   const onSubmit = async ({name, price, totalStock, description}: FormValuesType) => {
     const data = {
       name,
@@ -72,13 +64,10 @@ const EditInventory = ({ route, navigation }) => {
       totalStock,
       description,
     };
-    console.log(data)
-    console.log("key passed is ", inventory.id)
     try {
       const previousData = await AsyncStorage.getItem('@inventories');
       const parsedPreviousData = JSON.parse(previousData)
       parsedPreviousData[inventory.id] = data;
-      console.log(parsedPreviousData[inventory.id])
       await AsyncStorage.setItem('@inventories', JSON.stringify(parsedPreviousData))
       navigation.navigate('InventoryListing')
     } catch (e) {
@@ -87,15 +76,10 @@ const EditInventory = ({ route, navigation }) => {
   }
 
   const onDelete = async () => {
-    console.log("delete...", inventory.id)
     try {
       const previousData = await AsyncStorage.getItem('@inventories');
       const parsedPreviousData = JSON.parse(previousData)
-      console.log('before delete.... ', parsedPreviousData.length);
       const newRecord = parsedPreviousData.reverse().filter((invent, index) => {return index != inventory.id});
-      console.log('after delete.... ', newRecord);
-      // parsedPreviousData[inventory.id] = data;
-      // console.log(parsedPreviousData[inventory.id])
       await AsyncStorage.setItem('@inventories', JSON.stringify(newRecord))
       navigation.navigate('InventoryListing')
     } catch (e) {
@@ -119,7 +103,6 @@ const EditInventory = ({ route, navigation }) => {
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        //onDelete={onDelete}
         validationSchema={validationSchema}
       >
         {({
@@ -127,7 +110,6 @@ const EditInventory = ({ route, navigation }) => {
           handleChange,
           handleBlur,
           handleSubmit,
-          //handleDelete,
           touched,
           errors,
         }) => (
@@ -216,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 15,
     marginTop: 20,
-  }
+  },
 });
 
 const ArrowLeft = styled.Image`

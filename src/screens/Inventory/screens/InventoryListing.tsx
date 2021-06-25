@@ -1,76 +1,47 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, Linking} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import {FloatingAction} from "react-native-floating-action";
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { windowWidth, windowHeight} from '../../constants';
+import {windowWidth} from '../../constants';
 import {ScrollView} from 'react-native';
 import Colors from '../../../utils/Colors';
 import InventoryDetails from '../../components/InventoryDetails';
 import close_24px_outlined from '../../../assets/close_24px_outlined.png';
 import check2 from '../../../assets/check2.png';
 
-const mockedInventories = [
-  {
-    name: 'Water Heater1',
-    totalStock: 2000,
-    price: 200000,
-    description: 'This is s a water heater',
-  },
-  {
-    name: 'Water Heater2',
-    totalStock: 2000,
-    price: 200000,
-    description: 'This is s a water heater',
-  },
-  {
-    name: 'Water Heater3',
-    totalStock: 2000,
-    price: 200000,
-    description: 'This is s a water heater',
-  },
-  {
-    name: 'Water Heater4',
-    totalStock: 2000,
-    price: 200000,
-    description: 'This is s a water heater',
-  },
-  {
-    name: 'Water Heater5',
-    totalStock: 2000,
-    price: 200000,
-    description: 'This is s a water heater',
-  },
-];
-
 const actions = [
   {
     text: 'Add Inventory',
     icon: close_24px_outlined,
-    name: 'add_goal',
     position: 1,
+  },
+  {
+    text: 'Delete Inventories',
+    icon: check2,
+    position: 2,
   },
 ];
 
-const InventoryListing = ({navigation}) => {
+const InventoryListing = () => {
+  const [inventories, setInventories] = useState([]);
+  const navigation = useNavigation();
 
-  const [inventories, setInventories] = React.useState([]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       getInventories();
     });
     return unsubscribe;
-  }, [navigation])
+  }, [navigation]);
 
   const getInventories = async () => {
     try {
-      //await AsyncStorage.removeItem('@inventories');
       const response = await AsyncStorage.getItem('@inventories');
-      setInventories(response ? JSON.parse(response) : [])
+      setInventories(response ? JSON.parse(response) : []);
     } catch (e) {
-      // saving error
+      console.log(e);
     }
-  }
+  };
 
   return (
     <>
@@ -85,7 +56,6 @@ const InventoryListing = ({navigation}) => {
               price={inventory.price}
               totalStock={inventory.totalStock}
               description={inventory.description}
-              navigation={navigation}
             />
           ))}
         </ScrollView>
