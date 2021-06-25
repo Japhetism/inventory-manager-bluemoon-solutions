@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import InventoryForm from '../../components/InventoryForm';
 import Header from '../../components/Header';
+import {displayAlert} from '../../../utils/Helper';
 
 export interface FormValuesType {
   name: string;
@@ -15,6 +16,13 @@ export interface FormValuesType {
 
 const AddInventory = () => {
   const navigation = useNavigation();
+
+  const initialValues: FormValuesType = {
+    name: '',
+    price: 0,
+    totalStock: 0,
+    description: '',
+  };
 
   const onSubmit = async ({
     name,
@@ -44,7 +52,7 @@ const AddInventory = () => {
       }
       navigation.navigate('InventoryListing');
     } catch (e) {
-      // saving error
+      displayAlert('Error', 'An error occurred.', null);
     }
   };
 
@@ -52,7 +60,7 @@ const AddInventory = () => {
     <KeyboardAwareScrollView>
       <View>
         <Header canGoBack={true} title="Create Inventory" />
-        <InventoryForm onSubmit={onSubmit} type="create" />
+        <InventoryForm onSubmit={onSubmit} type="create" {...initialValues} />
       </View>
     </KeyboardAwareScrollView>
   );

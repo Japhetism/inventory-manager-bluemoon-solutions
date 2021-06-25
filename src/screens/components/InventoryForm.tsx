@@ -25,14 +25,12 @@ const validationSchema = yup.object({
     .string('Enter name')
     .required('Name is required'),
   price: yup
-    .string('Enter price')
+    .number('Enter price')
     .min(1, 'Minimum value is 1')
-    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Price is required'),
   totalStock: yup
-    .string('Enter total stock')
+    .number('Enter total stock')
     .min(1, 'Minimum value is 1')
-    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Total stock is required'),
   description: yup
     .string('Enter description')

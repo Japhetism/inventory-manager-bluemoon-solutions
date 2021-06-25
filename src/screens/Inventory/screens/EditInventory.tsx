@@ -8,6 +8,8 @@ import styled from 'styled-components/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Formik} from "formik";
 import * as yup from 'yup';
+import Header from '../../components/Header';
+import InventoryForm from '../../components/InventoryForm';
 
 export interface FormValuesType {
   name: string;
@@ -60,6 +62,7 @@ const EditInventory = () => {
     price: inventory.price,
     totalStock: inventory.totalStock,
     description: inventory.description,
+    id: inventory.id,
   };
 
   const onSubmit = async ({name, price, totalStock, description}: FormValuesType) => {
@@ -117,7 +120,9 @@ const EditInventory = () => {
   return (
     <KeyboardAwareScrollView>
       <View>
-        <Text style={styles.headText}>
+        <Header canGoBack={true} title="Edit Inventory" />
+        <InventoryForm onSubmit={onSubmit} onDelete={displayAlert} type="edit" {...initialValues} />
+        {/* <Text style={styles.headText}>
           <Pressable
             {...{
               hitSlop,
@@ -126,8 +131,8 @@ const EditInventory = () => {
             <ArrowLeft source={arrowLeft} />
           </Pressable>
           Edit Inventory
-        </Text>
-      <Formik
+        </Text> */}
+      {/* <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
         validationSchema={validationSchema}
@@ -187,7 +192,7 @@ const EditInventory = () => {
           <TouchableOpacity style={styles.button} onPress={displayAlert}>
             <Text style={styles.text}>Delete</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       {/* <Button
         onPress={handleSubmit}
         title="Update Inventory"
@@ -196,9 +201,9 @@ const EditInventory = () => {
         onPress={displayAlert}
         title="Delete Inventory"
       /> */}
-    </SafeAreaView>
+    {/* </SafeAreaView>
         )}
-        </Formik>
+        </Formik> */}
       </View>
     </KeyboardAwareScrollView>
   );
