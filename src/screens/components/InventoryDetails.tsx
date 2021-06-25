@@ -8,6 +8,8 @@ interface InventoryDetailsProps {
   totalStock: number;
   price: number;
   description: string;
+  navigation: string;
+  id: number;
 }
 
 const InventoryDetails: React.FC<InventoryDetailsProps> = ({
@@ -15,6 +17,8 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({
   totalStock,
   price,
   description,
+  navigation,
+  id,
 }) => {
   return (
     <View style={styles.container}>
@@ -23,7 +27,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({
       <Text>@ {price} per unit</Text>
       <View style={styles.section}>
         <Text>{totalStock} units available</Text>
-        <Text style={styles.viewLink}>View</Text>
+        <Text style={styles.viewLink} onPress={() => navigation.navigate('EditInventory', {inventory: {name, totalStock, price, description, id}})}>View</Text>
       </View>
     </View>
   );

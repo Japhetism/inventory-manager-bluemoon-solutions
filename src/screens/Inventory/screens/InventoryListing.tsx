@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Image, Linking} from 'react-native';
 import {FloatingAction} from "react-native-floating-action";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { windowWidth, windowHeight} from '../../constants';
 import {ScrollView} from 'react-native';
 import Colors from '../../../utils/Colors';
@@ -51,28 +52,50 @@ const actions = [
 ];
 
 const InventoryListing = ({navigation}) => {
+
+  const [inventories, setInventories] = React.useState([]);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getInventories();
+    });
+    return unsubscribe;
+  }, [navigation])
+
+  const getInventories = async () => {
+    try {
+      //await AsyncStorage.removeItem('@inventories');
+      const response = await AsyncStorage.getItem('@inventories');
+      setInventories(response ? JSON.parse(response) : [])
+    } catch (e) {
+      // saving error
+    }
+  }
+
   return (
     <>
       <Text style={styles.headText}>Inventory Listing</Text>
       <View style={styles.wrapper}>
         <ScrollView>
-          {mockedInventories.map(inventory => (
+          {inventories.reverse().map((inventory, index) => (
             <InventoryDetails
-              key={inventory.name}
+              key={index}
+              id={index}
               name={inventory.name}
               price={inventory.price}
               totalStock={inventory.totalStock}
               description={inventory.description}
+              navigation={navigation}
             />
           ))}
         </ScrollView>
-        <FloatingAction
-          actions={actions}
-          overlayColor={"rgba(0, 0, 0, 0)"}
-          color={Colors.AmberRed}
-          onPressItem={name => navigation.navigate("AddInventory")}
-        />
       </View>
+      <FloatingAction
+        actions={actions}
+        overlayColor={"rgba(0, 0, 0, 0)"}
+        color={Colors.AmberRed}
+        onPressItem={name => navigation.navigate("AddInventory")}
+      />
     </>
   );
 };

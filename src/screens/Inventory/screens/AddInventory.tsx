@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
 import {arrowLeft} from '../../constants';
@@ -12,7 +12,7 @@ export interface FormValuesType {
   name: string;
   description: string;
   price: number;
-  totalCost: number;
+  totalStock: number;
 }
 
 const validationSchema = yup.object({
@@ -22,9 +22,9 @@ const validationSchema = yup.object({
   price: yup
     .number('Enter price')
     .required('Price is required'),
-  totalCost: yup
-    .number('Enter total cost')
-    .required('Total cost is required'),
+  totalStock: yup
+    .number('Enter total stock')
+    .required('Total stock is required'),
   description: yup
     .string('Enter description')
     .required('Description is required'),
@@ -49,11 +49,11 @@ const AddInventory = ({navigation}) => {
     description: '',
   };
 
-  const onSubmit = async ({name, price, totalCost, description}: FormValuesType) => {
+  const onSubmit = async ({name, price, totalStock, description}: FormValuesType) => {
     const data = {
       name,
       price,
-      totalCost,
+      totalStock,
       description,
     };
     try {
@@ -67,6 +67,7 @@ const AddInventory = ({navigation}) => {
         parsedPreviousData.push(data);
         await AsyncStorage.setItem('@inventories', JSON.stringify(parsedPreviousData))
       }
+      navigation.navigate('InventoryListing')
     } catch (e) {
       // saving error
     }
@@ -116,17 +117,17 @@ const AddInventory = ({navigation}) => {
           value={values.price}
           keyboardType="numeric"
          />
-           <Text style={styles.label}>Total Cost</Text>
+           <Text style={styles.label}>Total Stock</Text>
            <Text>{errors.price}</Text>
         </View>
         <View>
           <TextInput
             style={styles.input}
-            onChangeText={handleChange("totalCost")}
+            onChangeText={handleChange("totalStock")}
             value={values.totalCost}
             keyboardType="numeric"
           />
-          <Text>{errors.totalCost}</Text>
+          <Text>{errors.totalStock}</Text>
         </View>
         <View>
           <Text style={styles.label}>Description</Text>

@@ -1,15 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, Linking, Pressable, TextInput, SafeAreaView, Button} from 'react-native';
-import {FloatingAction} from "react-native-floating-action";
-import { windowWidth, windowHeight} from '../../constants';
-import {ScrollView} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
-import InventoryDetails from '../../components/InventoryDetails';
-import close_24px_outlined from '../../../assets/close_24px_outlined.png';
-import check2 from '../../../assets/check2.png';
 import {arrowLeft} from '../../constants';
 import styled from 'styled-components/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Formik} from "formik";
 import * as yup from 'yup';
 
@@ -17,7 +12,8 @@ export interface FormValuesType {
   name: string;
   description: string;
   price: number;
-  totalCost: number;
+  totalStock: number;
+  id: number,
 }
 
 const validationSchema = yup.object({
@@ -27,15 +23,18 @@ const validationSchema = yup.object({
   price: yup
     .number('Enter price')
     .required('Price is required'),
-  totalCost: yup
-    .number('Enter total cost')
-    .required('Total cost is required'),
+  totalStock: yup
+    .number('Enter total stock')
+    .required('Total stock is required'),
   description: yup
     .string('Enter description')
     .required('Description is required'),
 });
 
-const EditInventory = ({navigation}) => {
+const EditInventory = ({ route, navigation }) => {
+  console.log("route is ", route)
+  const {inventory} = route.params;
+  console.log("passed inventory ", inventory)
   const [isDisabled, setIsDisabled] = useState(false);
   const [error, setError] = useState('');
   const onPress = () => {
@@ -47,73 +46,137 @@ const EditInventory = ({navigation}) => {
     left: 15,
     right: 15,
   };
-    const initialValues: FormValuesType = {
-      name: '',
-      price: 0,
-      totalCost: 0,
-      description: '',
+
+  const initialValues: FormValuesType = {
+    name: inventory.name,
+    price: inventory.price,
+    totalStock: inventory.totalStock,
+    description: inventory.description,
+  };
+
+  // React.useEffect(() => {
+  //   const {inventory} = route.params;
+  //   console.log("passed inventory ", inventory)
+  //   // initialValues: FormValuesType = {
+  //   //   name: inventory.name,
+  //   //   price: inventory.price,
+  //   //   totalCost: inventory.totalCost,
+  //   //   description: inventory.description,
+  //   // };
+  // }, [])
+
+  const onSubmit = async ({name, price, totalStock, description}: FormValuesType) => {
+    const data = {
+      name,
+      price,
+      totalStock,
+      description,
     };
-  const onSubmit = async ({name, price, totalCost, description}: FormValuesType) => {
-    console.log(name)
+    console.log(data)
+    console.log("key passed is ", inventory.id)
+    try {
+      const previousData = await AsyncStorage.getItem('@inventories');
+      const parsedPreviousData = JSON.parse(previousData)
+      parsedPreviousData[inventory.id] = data;
+      console.log(parsedPreviousData[inventory.id])
+      await AsyncStorage.setItem('@inventories', JSON.stringify(parsedPreviousData))
+      navigation.navigate('InventoryListing')
+    } catch (e) {
+      // saving error
+    }
   }
+
+  const onDelete = async () => {
+    console.log("delete...", inventory.id)
+    try {
+      const previousData = await AsyncStorage.getItem('@inventories');
+      const parsedPreviousData = JSON.parse(previousData)
+      console.log('before delete.... ', parsedPreviousData.length);
+      const newRecord = parsedPreviousData.reverse().filter((invent, index) => {return index != inventory.id});
+      console.log('after delete.... ', newRecord);
+      // parsedPreviousData[inventory.id] = data;
+      // console.log(parsedPreviousData[inventory.id])
+      await AsyncStorage.setItem('@inventories', JSON.stringify(newRecord))
+      navigation.navigate('InventoryListing')
+    } catch (e) {
+      // saving error
+    }
+  }
+
   return (
     <KeyboardAwareScrollView>
       <View>
-      <Text style={styles.headText}>
-       <Pressable
-          {...{
-            hitSlop,
-            onPress,
-          }}>
-          <ArrowLeft source={arrowLeft} />
-        </Pressable>
-        Edit Inventory
-      </Text>
+        <Text style={styles.headText}>
+          <Pressable
+            {...{
+              hitSlop,
+              onPress,
+            }}>
+            <ArrowLeft source={arrowLeft} />
+          </Pressable>
+          Edit Inventory
+        </Text>
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={validationSchema}>
+        //onDelete={onDelete}
+        validationSchema={validationSchema}
+      >
         {({
           values,
           handleChange,
           handleBlur,
           handleSubmit,
+          //handleDelete,
           touched,
           errors,
         }) => (
       <SafeAreaView>
-      <TextInput
-        style={styles.input}
-        onChangeText={handleChange("name")}
-        value={values.name}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={handleChange("price")}
-        value={values.price}
-        placeholder="Price"
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={handleChange("totalCost")}
-        value={values.totalCost}
-        placeholder="Total Cost"
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={handleChange("description")}
-        value={values.description}
-        placeholder="Description"
-        multiline
-      />
+        <View>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange("name")}
+            value={values.name}
+          />
+          <Text>{errors.name}</Text>
+        </View>
+        <View>
+          <Text style={styles.label}>Price</Text>
+         <TextInput
+          style={styles.input}
+          onChangeText={handleChange("price")}
+          value={values.price}
+          keyboardType="numeric"
+         />
+           <Text style={styles.label}>Total Cost</Text>
+           <Text>{errors.price}</Text>
+        </View>
+        <View>
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange("totalStock")}
+            value={values.totalStock}
+            keyboardType="numeric"
+          />
+          <Text>{errors.totalCost}</Text>
+        </View>
+        <View>
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.inputMulti}
+            onChangeText={handleChange("description")}
+            value={values.description}
+            multiline
+          />
+         <Text>{errors.description}</Text>
+        </View>
       <Button
         onPress={handleSubmit}
         title="Update Inventory"
       />
       <Button
-        //onPress={handleSubmit}
+        onPress={onDelete}
         title="Delete Inventory"
       />
     </SafeAreaView>
@@ -127,11 +190,6 @@ const EditInventory = ({navigation}) => {
 export default EditInventory;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#f5f5f5',
-    flex: 1,
-    alignItems: 'center',
-  },
   headText: {
     color: Colors.AmberRed,
     fontSize: 27,
@@ -139,44 +197,26 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginLeft: 20,
   },
-  top: {
-    backgroundColor: '#E35540',
-    height: 30,
-    width: 100,
-  },
-  text: {
-    fontSize: 30,
-    marginVertical: 20,
-    color: '#E35540',
-  },
-  errorText: {
-    color: 'red',
-    //fontSize: Textsizes.Regular,
-    marginBottom: 8
-  },
-  forgot: {
-    color: Colors.AmberRed,
-    //fontSize: Textsizes.xMedium,
-    marginTop: 30
-  },
-  navButton: {
-    marginTop: 15,
-  },
-  navButtonText: {
-    fontSize: 20,
-    color: '#6646ee',
-  },
-  loginForm: {
-    justifyContent: 'center',
-    height: 500,
-    //height: Dimensions.get('window').height / 1.5,
-    alignItems: 'center',
-  },
   input: {
-    height: 40,
+    height: 50,
     margin: 12,
     borderWidth: 1,
+    borderColor: Colors.AmberRed,
+    borderRadius: 10,
   },
+  inputMulti: {
+    height: 100,
+    margin: 12,
+    borderWidth: 1,
+    borderColor: Colors.AmberRed,
+    borderRadius: 10,
+  },
+  label: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingLeft: 15,
+    marginTop: 20,
+  }
 });
 
 const ArrowLeft = styled.Image`
