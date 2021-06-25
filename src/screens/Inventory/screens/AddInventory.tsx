@@ -44,7 +44,6 @@ const AddInventory = () => {
         await AsyncStorage.setItem('@inventories', JSON.stringify(newData));
       } else {
         const parsedPreviousData = JSON.parse(previousData);
-        console.log('record exist ', recordExist(parsedPreviousData, name));
         if (recordExist(parsedPreviousData, name).length === 0) {
           parsedPreviousData.push(data);
           await AsyncStorage.setItem(
