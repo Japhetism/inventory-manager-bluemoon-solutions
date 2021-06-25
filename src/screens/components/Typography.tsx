@@ -9,7 +9,13 @@ interface TypographyProps {
 }
 
 const Typography = styled.Text<TypographyProps>`
-  ${(props) => `
+  ${(props: {
+    color: any;
+    fontWeight: any;
+    fontSize: any;
+    fontStyle: any;
+    lineHeight: any;
+  }) => `
     color: ${props.color};
     font-weight: ${props.fontWeight};
     font-size: ${props.fontSize};

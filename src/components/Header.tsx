@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Animated, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
-import{windowWidth, windowHeight} from '../screens/constants';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {windowWidth, windowHeight} from '../screens/constants';
 
 const Header = () => {
   return (

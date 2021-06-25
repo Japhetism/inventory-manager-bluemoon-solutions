@@ -1,4 +1,4 @@
-import {Dimensions} from "react-native";
+import {Dimensions} from 'react-native';
 
 export const FONTS_MONTSERRAT_300 = 'Montserrat-Light';
 export const FONTS_MONTSERRAT_ITALIC_400 = 'Montserrat-Regular-Italic';

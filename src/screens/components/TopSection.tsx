@@ -14,7 +14,7 @@ interface TopSectionProps {
   style?: ViewStyle;
 }
 
-const TopSection: FC<TopSectionProps> =({
+const TopSection: FC<TopSectionProps> = ({
   navTitle,
   withGoBackBtn,
   rightNavComponent: RightNavComponent,
@@ -23,8 +23,11 @@ const TopSection: FC<TopSectionProps> =({
 }) => {
   const navigation = useNavigation();
   const onPress = () => {
-    if (onBackPress) onBackPress();
-    else navigation.goBack();
+    if (onBackPress) {
+      onBackPress();
+    } else {
+      navigation.goBack();
+    }
   };
   const hitSlop = {
     top: 15,

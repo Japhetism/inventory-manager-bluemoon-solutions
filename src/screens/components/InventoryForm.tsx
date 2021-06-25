@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView,TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import Colors from '../../utils/Colors';
-import {arrowLeft} from '../constants';
-import styled from 'styled-components/native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Formik} from "formik";
+import {Formik} from 'formik';
 import * as yup from 'yup';
 
 export interface FormValuesType {
@@ -21,122 +23,111 @@ export interface FormValuesType {
 }
 
 const validationSchema = yup.object({
-  name: yup
-    .string('Enter name')
-    .required('Name is required'),
+  name: yup.string().required('Name is required'),
   price: yup
-    .number('Enter price')
+    .number()
     .min(1, 'Minimum value is 1')
     .required('Price is required'),
   totalStock: yup
-    .number('Enter total stock')
+    .number()
     .min(1, 'Minimum value is 1')
     .required('Total stock is required'),
   description: yup
-    .string('Enter description')
+    .string()
     .min(4, 'Minimum of 3 words')
     .required('Description is required'),
 });
 
-const InventoryForm: React.FC<InventoryDetailsProps> = ({
+const InventoryForm: React.FC<FormValuesType> = ({
   name,
   totalStock,
   price,
   description,
-  id,
   onSubmit,
   onDelete,
   type,
+  id,
 }) => {
-  const navigation = useNavigation();
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [error, setError] = useState('');
-  const onPress = () => {
-    navigation.goBack();
-  };
-  const hitSlop = {
-    top: 15,
-    bottom: 15,
-    left: 15,
-    right: 15,
-  };
   const initialValues: FormValuesType = {
     name,
     price,
     totalStock,
     description,
+    id,
+    type,
+    onSubmit,
   };
 
   return (
     <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        {({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          touched,
-          errors,
-        }) => (
-      <SafeAreaView>
-        <View>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange("name")}
-            value={values.name}
-          />
-          <Text style={styles.error}>{touched.name && errors.name}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>Price</Text>
-         <TextInput
-          style={styles.input}
-          onChangeText={handleChange("price")}
-          value={values.price}
-          keyboardType="numeric"
-         />
-           <Text style={styles.error}>{touched.price && errors.price}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>Total Stock</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange("totalStock")}
-            value={values.totalStock}
-            keyboardType="numeric"
-          />
-          <Text style={styles.error}>{touched.totalStock && errors.totalStock}</Text>
-        </View>
-        <View>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.inputMulti}
-            onChangeText={handleChange("description")}
-            value={values.description}
-            multiline
-          />
-         <Text style={styles.error}>{touched.description && errors.description}</Text>
-        </View>
-        {type === 'create' && <View style={styles.buttonCreateContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.text}>Add Inventory</Text>
-          </TouchableOpacity>
-        </View>}
-        {type === 'edit' && <View style={styles.buttonEditContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.text}>Save Changes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={onDelete}>
-            <Text style={styles.text}>Delete</Text>
-          </TouchableOpacity>
-        </View>} 
-    </SafeAreaView>
-        )}
-        </Formik>
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={validationSchema}>
+      {({values, handleChange, handleSubmit, touched, errors}) => (
+        <SafeAreaView>
+          <View>
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={handleChange('name')}
+              value={values.name}
+            />
+            <Text style={styles.error}>{touched.name && errors.name}</Text>
+          </View>
+          <View>
+            <Text style={styles.label}>Price</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={handleChange('price')}
+              value={values.price}
+              keyboardType="numeric"
+            />
+            <Text style={styles.error}>{touched.price && errors.price}</Text>
+          </View>
+          <View>
+            <Text style={styles.label}>Total Stock</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={handleChange('totalStock')}
+              value={values.totalStock}
+              keyboardType="numeric"
+            />
+            <Text style={styles.error}>
+              {touched.totalStock && errors.totalStock}
+            </Text>
+          </View>
+          <View>
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={styles.inputMulti}
+              onChangeText={handleChange('description')}
+              value={values.description}
+              multiline
+            />
+            <Text style={styles.error}>
+              {touched.description && errors.description}
+            </Text>
+          </View>
+          {type === 'create' && (
+            <View style={styles.buttonCreateContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.text}>Add Inventory</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {type === 'edit' && (
+            <View style={styles.buttonEditContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.text}>Save Changes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={onDelete}>
+                <Text style={styles.text}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </SafeAreaView>
+      )}
+    </Formik>
   );
 };
 

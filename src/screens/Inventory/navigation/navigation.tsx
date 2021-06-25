@@ -25,7 +25,9 @@ const navigation = () => {
   return (
     <>
       <Header />
-      <InventoryStack.Navigator headerMode="screen" initialRouteName="InventoryListing">
+      <InventoryStack.Navigator
+        headerMode="screen"
+        initialRouteName="InventoryListing">
         <InventoryStack.Screen
           options={{
             headerShown: false,

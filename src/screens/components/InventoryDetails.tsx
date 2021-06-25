@@ -21,7 +21,13 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({
 }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('EditInventory', {inventory: {name, totalStock, price, description, id}})}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() =>
+        navigation.navigate('EditInventory', {
+          inventory: {name, totalStock, price, description, id},
+        })
+      }>
       <Text>{name}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text>@ {price} per unit</Text>
