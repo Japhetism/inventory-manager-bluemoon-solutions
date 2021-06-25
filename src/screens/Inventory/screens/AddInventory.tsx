@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button, Alert} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView,TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
@@ -12,22 +12,27 @@ import * as yup from 'yup';
 export interface FormValuesType {
   name: string;
   description: string;
-  price: number;
-  totalStock: number;
+  price: string;
+  totalStock: string;
 }
 
 const validationSchema = yup.object({
   name: yup
-    .string('Enter your email')
-    .required('Email is required'),
+    .string('Enter name')
+    .required('Name is required'),
   price: yup
-    .number('Enter price')
+    .string('Enter price')
+    .min(1, 'Minimum value is 1')
+    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Price is required'),
   totalStock: yup
-    .number('Enter total stock')
+    .string('Enter total stock')
+    .min(1, 'Minimum value is 1')
+    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Total stock is required'),
   description: yup
     .string('Enter description')
+    .min(4, 'Minimum of 3 words')
     .required('Description is required'),
 });
 
@@ -46,8 +51,8 @@ const AddInventory = () => {
   };
   const initialValues: FormValuesType = {
     name: '',
-    price: 0,
-    totalCost: 0,
+    price: '',
+    totalStock: '',
     description: '',
   };
 
@@ -109,7 +114,7 @@ const AddInventory = () => {
             onChangeText={handleChange("name")}
             value={values.name}
           />
-          <Text>{errors.name}</Text>
+          <Text style={styles.error}>{touched.name && errors.name}</Text>
         </View>
         <View>
           <Text style={styles.label}>Price</Text>
@@ -119,17 +124,17 @@ const AddInventory = () => {
           value={values.price}
           keyboardType="numeric"
          />
-           <Text style={styles.label}>Total Stock</Text>
-           <Text>{errors.price}</Text>
+           <Text style={styles.error}>{touched.price && errors.price}</Text>
         </View>
         <View>
+          <Text style={styles.label}>Total Stock</Text>
           <TextInput
             style={styles.input}
             onChangeText={handleChange("totalStock")}
-            value={values.totalCost}
+            value={values.totalStock}
             keyboardType="numeric"
           />
-          <Text>{errors.totalStock}</Text>
+          <Text style={styles.error}>{touched.totalStock && errors.totalStock}</Text>
         </View>
         <View>
           <Text style={styles.label}>Description</Text>
@@ -139,12 +144,13 @@ const AddInventory = () => {
             value={values.description}
             multiline
           />
-         <Text>{errors.description}</Text>
+         <Text style={styles.error}>{touched.description && errors.description}</Text>
         </View>
-      <Button
-        onPress={handleSubmit}
-        title="Add Inventory"
-      />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.text}>Add Inventory</Text>
+          </TouchableOpacity>
+        </View>
     </SafeAreaView>
         )}
         </Formik>
@@ -164,11 +170,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   input: {
-    height: 50,
+    height: 40,
     margin: 12,
     borderWidth: 1,
     borderColor: Colors.AmberRed,
     borderRadius: 10,
+    paddingLeft: 10,
   },
   inputMulti: {
     height: 100,
@@ -176,12 +183,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.AmberRed,
     borderRadius: 10,
+    paddingLeft: 10,
   },
   label: {
     fontSize: 20,
     fontWeight: 'bold',
     paddingLeft: 15,
     marginTop: 20,
+  },
+  button: {
+    backgroundColor: Colors.AmberRed,
+    padding: 18,
+    width: '46%',
+    height: 60,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+  },
+  error: {
+    color: 'red',
+    paddingLeft: 20,
   },
 });
 

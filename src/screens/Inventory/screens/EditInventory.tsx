@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TextInput, SafeAreaView, Button, Alert, TouchableOpacity} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../../utils/Colors';
@@ -19,16 +19,21 @@ export interface FormValuesType {
 
 const validationSchema = yup.object({
   name: yup
-    .string('Enter your email')
-    .required('Email is required'),
+    .string('Enter name')
+    .required('Name is required'),
   price: yup
-    .number('Enter price')
+    .string('Enter price')
+    .min(1, 'Minimum value is 1')
+    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Price is required'),
   totalStock: yup
-    .number('Enter total stock')
+    .string('Enter total stock')
+    .min(1, 'Minimum value is 1')
+    .matches(/^[0-9]+$/, "Must be only digits")
     .required('Total stock is required'),
   description: yup
     .string('Enter description')
+    .min(4, 'Minimum of 3 words')
     .required('Description is required'),
 });
 
@@ -73,7 +78,7 @@ const EditInventory = () => {
     } catch (e) {
       // saving error
     }
-  }
+  };
 
   const onDelete = async () => {
     try {
@@ -85,7 +90,29 @@ const EditInventory = () => {
     } catch (e) {
       // saving error
     }
-  }
+  };
+
+  const displayAlert = () => {
+    Alert.alert(
+      'Delete Inventory',
+      'Are you sure you want to delete this inventory?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            onDelete();
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => {
+            cancelable: true
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
 
   return (
     <KeyboardAwareScrollView>
@@ -121,7 +148,7 @@ const EditInventory = () => {
             onChangeText={handleChange("name")}
             value={values.name}
           />
-          <Text>{errors.name}</Text>
+          <Text style={styles.error}>{touched.name && errors.name}</Text>
         </View>
         <View>
           <Text style={styles.label}>Price</Text>
@@ -132,7 +159,7 @@ const EditInventory = () => {
           keyboardType="numeric"
          />
            <Text style={styles.label}>Total Cost</Text>
-           <Text>{errors.price}</Text>
+           <Text style={styles.error}>{touched.price && errors.price}</Text>
         </View>
         <View>
           <TextInput
@@ -141,7 +168,7 @@ const EditInventory = () => {
             value={values.totalStock}
             keyboardType="numeric"
           />
-          <Text>{errors.totalCost}</Text>
+          <Text style={styles.error}>{touched.totalStock && errors.totalStock}</Text>
         </View>
         <View>
           <Text style={styles.label}>Description</Text>
@@ -151,16 +178,24 @@ const EditInventory = () => {
             value={values.description}
             multiline
           />
-         <Text>{errors.description}</Text>
+         <Text style={styles.error}>{touched.description && errors.description}</Text>
         </View>
-      <Button
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.text}>Save Changes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={displayAlert}>
+            <Text style={styles.text}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      {/* <Button
         onPress={handleSubmit}
         title="Update Inventory"
       />
       <Button
-        onPress={onDelete}
+        onPress={displayAlert}
         title="Delete Inventory"
-      />
+      /> */}
     </SafeAreaView>
         )}
         </Formik>
@@ -180,11 +215,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   input: {
-    height: 50,
+    height: 40,
     margin: 12,
     borderWidth: 1,
     borderColor: Colors.AmberRed,
     borderRadius: 10,
+    paddingLeft: 10,
   },
   inputMulti: {
     height: 100,
@@ -192,12 +228,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.AmberRed,
     borderRadius: 10,
+    paddingLeft: 10,
   },
   label: {
     fontSize: 20,
     fontWeight: 'bold',
     paddingLeft: 15,
     marginTop: 20,
+  },
+  button: {
+    backgroundColor: Colors.AmberRed,
+    padding: 18,
+    width: '46%',
+    height: 60,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  error: {
+    color: 'red',
+    paddingLeft: 20,
   },
 });
 
